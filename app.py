@@ -53,7 +53,13 @@ def extract_bill_info_gemini(image_array):
         Ensure the JSON is valid and can be parsed by a computer.
         """
         
-        image_part = {"mime_type": "image/png", "data": cv2.imencode(".png", image_array)[1].tobytes()}
+        # Convert the image to bytes
+        image_bytes = cv2.imencode(".png", image_array)[1].tobytes()
+        
+        # Use the proper Part helper method
+        image_part = types.Part.from_bytes(data=image_bytes, mime_type="image/png")
+        
+        # Send as contents array
         response = client.models.generate_content(
             model="gemini-2.0-flash",
             contents=[prompt, image_part]
@@ -116,7 +122,7 @@ def health_check():
     try:
         # Check external service availability (e.g., Gemini API key validation)
         #genai.GenerativeModel('gemini-2.0-flash')  # Test model initialization
-        client.models.get_model(model="gemini-2.0-flash")
+        client.models.get(model="gemini-2.0-flash")
         return jsonify({"status": "healthy", "message": "Server is running"}), 200
     except Exception as e:
         return jsonify({"status": "unhealthy", "error": str(e)}), 500
