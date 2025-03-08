@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify
-import google.generativeai as genai
+#import google.generativeai as genai
+from google import genai
+from google.genai import types
 import cv2
 import json
 import os
@@ -7,20 +9,18 @@ import re
 import numpy as np
 from PIL import Image
 
-app = Flask(__name__)
-
 # Configure with your API key
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 if not GEMINI_API_KEY:
     raise ValueError("GEMINI_API_KEY environment variable is not set.")
-genai.configure(api_key=GEMINI_API_KEY)
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 def extract_bill_info_gemini(image_array):
     if image_array is None:
         return {"error": "No image provided"}
     
     try:
-        model = genai.GenerativeModel('gemini-2.0-flash')
+        #model = "gemini-2.0-flash"
 
         prompt = """
         You are an expert at extracting information from receipts and bills.
@@ -52,7 +52,11 @@ def extract_bill_info_gemini(image_array):
         """
         
         image_part = {"mime_type": "image/png", "data": cv2.imencode(".png", image_array)[1].tobytes()}
-        response = model.generate_content([prompt, image_part])
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=[prompt, image_part]
+        )
+        #response = model.generate_content([prompt, image_part])
         
         json_string = response.text
         
@@ -109,7 +113,8 @@ def extract_bill():
 def health_check():
     try:
         # Check external service availability (e.g., Gemini API key validation)
-        genai.GenerativeModel('gemini-2.0-flash')  # Test model initialization
+        #genai.GenerativeModel('gemini-2.0-flash')  # Test model initialization
+        client.models.get_model(model="gemini-2.0-flash")
         return jsonify({"status": "healthy", "message": "Server is running"}), 200
     except Exception as e:
         return jsonify({"status": "unhealthy", "error": str(e)}), 500
