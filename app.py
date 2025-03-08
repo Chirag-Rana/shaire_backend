@@ -9,6 +9,8 @@ import re
 import numpy as np
 from PIL import Image
 
+app = Flask(__name__)
+
 # Configure with your API key
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 if not GEMINI_API_KEY:
