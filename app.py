@@ -30,7 +30,7 @@ def extract_bill_info_gemini(image_array):
         - Merchant name (restaurant or store name)
         - Date of purchase
         - Total amount
-        - All items purchased with their individual amounts
+        - All items purchased with their individual amounts and types
 
         Return the information in a JSON format with the following structure:
         {
@@ -40,14 +40,26 @@ def extract_bill_info_gemini(image_array):
           "items": [
             {
               "description": "Item name",
-              "amount": 12.99
+              "amount": 12.99,
+              "type": "item"
             },
             {
-              "description": "Another item",
-              "amount": 5.99
+              "description": "Tax",
+              "amount": 1.99,
+              "type": "tax"
+            },
+            {
+              "description": "Discount",
+              "amount": 2.50,
+              "type": "discount"
             }
           ]
         }
+
+        For the "type" field, use one of the following values:
+        - "item": For regular menu items or products
+        - "tax": For tax charges or any other additional fees
+        - "discount": For discounts or promotions (use positive amounts even for discounts)
 
         If you cannot find some information, use null or empty values. Output ONLY the JSON.
         Ensure the JSON is valid and can be parsed by a computer.
@@ -136,15 +148,28 @@ def test_endpoint():
         "items": [
             {
                 "description": "Burger",
-                "amount": 12.99
+                "amount": 12.99,
+                "type": "item"
             },
             {
                 "description": "Fries",
-                "amount": 5.99
+                "amount": 5.99,
+                "type": "item"
             },
             {
                 "description": "Soda",
-                "amount": 2.49
+                "amount": 2.49,
+                "type": "item"
+            },
+            {
+                "description": "Sales Tax",
+                "amount": 1.70,
+                "type": "tax"
+            },
+            {
+                "description": "Happy Hour Discount",
+                "amount": 2.00,
+                "type": "discount"
             }
         ]
     })
