@@ -58,7 +58,7 @@ def extract_bill_info_gemini(image_array):
 
         For the "type" field, use one of the following values:
         - "item": For regular menu items or products
-        - "tax": For tax charges or any other additional fees
+        - "tax": For tax charges or all other additional fees like service fees
         - "discount": For discounts or promotions (use positive amounts even for discounts)
 
         If you cannot find some information, use null or empty values. Output ONLY the JSON.
